@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 240" fill="none">
+  <rect x="32" y="28" width="296" height="184" rx="28" fill="#fff" fill-opacity=".12"/>
+  <path d="M74 177h212" stroke="#fff" stroke-opacity=".38" stroke-width="3" stroke-linecap="round"/>
+  <rect x="119" y="96" width="119" height="73" rx="16" fill="#EAF8F6"/>
+  <path d="M143 96V82c0-8 6-14 14-14h25c8 0 14 6 14 14v14" stroke="#C9E8E4" stroke-width="8" stroke-linecap="round"/>
+  <path d="M143 133h71M178 116v35" stroke="#56B9AC" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="97" cy="84" r="21" fill="#F4C6A4"/>
+  <path d="M76 82c1-16 11-26 24-26 12 0 20 8 21 21-9-3-16-9-19-16-5 10-14 17-26 21Z" fill="#264D5B"/>
+  <path d="M64 166v-27c0-18 14-32 32-32h2c18 0 32 14 32 32v27H64Z" fill="#EDF7FF"/>
+  <path d="M86 114h21l-10 17-11-17Z" fill="#fff"/>
+  <path d="M96 131v29" stroke="#56B9AC" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="263" cy="82" r="20" fill="#DDA783"/>
+  <path d="M243 80c1-14 9-23 21-23 13 0 21 9 21 23-8-2-15-7-19-14-5 8-13 13-23 14Z" fill="#405461"/>
+  <path d="M234 166v-26c0-18 13-31 30-31h1c18 0 31 13 31 31v26h-62Z" fill="#F8F4EE"/>
+  <path d="M254 112h21l-10 17-11-17Z" fill="#fff"/>
+  <path d="M265 129v31" stroke="#57A5C9" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="180" cy="47" r="16" fill="#fff" fill-opacity=".92"/>
+  <path d="M180 39v16M172 47h16" stroke="#56B9AC" stroke-width="4" stroke-linecap="round"/>
+</svg>

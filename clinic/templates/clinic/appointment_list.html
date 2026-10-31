@@ -1,0 +1,115 @@
+{% extends "clinic/base.html" %}
+
+{% block title %}Appointments{% endblock %}
+{% block page_title %}Appointments{% endblock %}
+
+{% block content %}
+<div class="panel">
+    <div class="panel-header">
+        <div>
+            <h2><span class="heading-icon" aria-hidden="true">📅</span> Appointment List</h2>
+            <p class="panel-subtitle">Search, view, and manage clinic appointments.</p>
+        </div>
+        <a class="btn btn-teal" href="{% url 'appointment_add' %}">Schedule Appointment</a>
+    </div>
+
+    <form class="search-form d-flex flex-wrap align-items-center gap-2 mb-3" method="get" action="{% url 'appointment_list' %}">
+        <input
+            class="form-control"
+            style="min-width: 200px; max-width: 260px;"
+            type="search"
+            name="q"
+            value="{{ query }}"
+            placeholder="Search patient, doctor, reason"
+        >
+        <select name="status" class="form-select" style="width: auto; min-width: 140px;">
+            <option value="">All Statuses</option>
+            {% for val, label in status_choices %}
+                <option value="{{ val }}" {% if status_filter == val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+        <select name="doctor" class="form-select" style="width: auto; min-width: 170px;">
+            <option value="">All Doctors</option>
+            {% for doc in doctors %}
+                <option value="{{ doc.pk }}" {% if doctor_filter == doc.pk|stringformat:"s" %}selected{% endif %}>{{ doc.name }}</option>
+            {% endfor %}
+        </select>
+        <input
+            class="form-control"
+            style="width: auto; min-width: 150px;"
+            type="date"
+            name="date"
+            value="{{ date_filter }}"
+            title="Filter by appointment date"
+        >
+        <button class="btn btn-outline-teal" type="submit">Filter</button>
+        {% if query or status_filter or doctor_filter or date_filter %}
+            <a class="btn btn-light" href="{% url 'appointment_list' %}">Clear</a>
+        {% endif %}
+    </form>
+
+    <div class="table-wrap">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Patient</th>
+                    <th>Doctor</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in appointments %}
+                    <tr>
+                        <td>#{{ appointment.appointment_id }}</td>
+                        <td>
+                            <a href="{% url 'patient_detail' appointment.patient.pk %}" class="fw-semibold text-decoration-none theme-link">
+                                {{ appointment.patient.name }}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{% url 'doctor_detail' appointment.doctor.pk %}" class="text-decoration-none text-secondary">
+                                {{ appointment.doctor.name }}
+                            </a>
+                            {% if appointment.doctor.specialization %}
+                                <small class="text-muted d-block">{{ appointment.doctor.specialization }}</small>
+                            {% endif %}
+                        </td>
+                        <td>{{ appointment.appointment_date }}</td>
+                        <td>{{ appointment.appointment_time|time:"H:i" }}</td>
+                        <td>
+                            {% if appointment.status == 'Scheduled' %}
+                                <span class="status-badge status-primary">Scheduled</span>
+                            {% elif appointment.status == 'Completed' %}
+                                <span class="status-badge status-success">Completed</span>
+                            {% elif appointment.status == 'Cancelled' %}
+                                <span class="status-badge status-muted">Cancelled</span>
+                            {% else %}
+                                <span class="status-badge status-muted">{{ appointment.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="action-links">
+                            <a href="{% url 'appointment_detail' appointment.pk %}">View</a>
+                            <a href="{% url 'appointment_edit' appointment.pk %}">Edit</a>
+                            <a class="danger-link" href="{% url 'appointment_delete' appointment.pk %}">Delete</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="7" class="empty-row">
+                            {% if query or status_filter or doctor_filter or date_filter %}
+                                No appointments matched your search or filters.
+                            {% else %}
+                                No appointments have been scheduled yet.
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

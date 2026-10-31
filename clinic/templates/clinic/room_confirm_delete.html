@@ -1,0 +1,24 @@
+{% extends "clinic/base.html" %}
+
+{% block title %}Delete Room {{ room.room_number }}{% endblock %}
+{% block page_title %}Delete Room{% endblock %}
+
+{% block content %}
+<div class="panel form-panel">
+    <h2>Delete Room {{ room.room_number }}?</h2>
+    <p class="panel-subtitle">
+        This will permanently remove <strong>Room {{ room.room_number }}</strong>
+        ({{ room.room_type }}, Bed Capacity: {{ room.bed_capacity }}) from the system.
+        This action cannot be undone.
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-actions">
+            <button class="btn btn-danger" type="submit">Yes, delete room</button>
+            <a class="btn btn-light" href="{% url 'room_detail' room.pk %}">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+

@@ -1,0 +1,125 @@
+{% extends "clinic/base.html" %}
+
+{% block title %}Admissions{% endblock %}
+{% block page_title %}Admissions{% endblock %}
+
+{% block content %}
+<div class="panel">
+    <div class="panel-header">
+        <div>
+            <h2><span class="heading-icon" aria-hidden="true">🏥</span> Inpatient Admissions</h2>
+            <p class="panel-subtitle">
+                Track admitted patients, bed allocations, stay durations, and discharges.
+                <span class="status-badge status-primary ms-2">{{ total_active }} Admitted</span>
+                <span class="status-badge status-muted ms-1">{{ total_discharged }} Discharged</span>
+            </p>
+        </div>
+        <a class="btn btn-teal" href="{% url 'admission_add' %}">+ Admit Patient</a>
+    </div>
+
+    <form class="search-form d-flex flex-wrap align-items-center gap-2 mb-3" method="get" action="{% url 'admission_list' %}">
+        <input
+            class="form-control"
+            style="min-width: 200px; max-width: 260px;"
+            type="search"
+            name="q"
+            value="{{ query }}"
+            placeholder="Search patient, room, reason..."
+        >
+        <select name="status" class="form-select" style="width: auto; min-width: 140px;">
+            <option value="">All Statuses</option>
+            {% for val, label in status_choices %}
+                <option value="{{ val }}" {% if status_filter == val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+        <select name="room" class="form-select" style="width: auto; min-width: 150px;">
+            <option value="">All Rooms</option>
+            {% for r in rooms %}
+                <option value="{{ r.pk }}" {% if room_filter == r.pk|stringformat:"s" %}selected{% endif %}>Room {{ r.room_number }}</option>
+            {% endfor %}
+        </select>
+        <input
+            class="form-control"
+            style="width: auto; min-width: 150px;"
+            type="date"
+            name="date"
+            value="{{ date_filter }}"
+            title="Filter by admission date"
+        >
+        <button class="btn btn-outline-teal" type="submit">Filter</button>
+        {% if query or status_filter or room_filter or date_filter %}
+            <a class="btn btn-light" href="{% url 'admission_list' %}">Clear</a>
+        {% endif %}
+    </form>
+
+    <div class="table-wrap">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Patient</th>
+                    <th>Room</th>
+                    <th>Room Type</th>
+                    <th>Admission Date</th>
+                    <th>Discharge Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for admission in admissions %}
+                    <tr>
+                        <td>#{{ admission.admission_id }}</td>
+                        <td>
+                            <a href="{% url 'patient_detail' admission.patient.pk %}" class="fw-semibold text-decoration-none theme-link">
+                                {{ admission.patient.name }}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{% url 'room_detail' admission.room.pk %}" class="fw-bold text-decoration-none theme-link">
+                                Room {{ admission.room.room_number }}
+                            </a>
+                        </td>
+                        <td>{{ admission.room.room_type }}</td>
+                        <td>{{ admission.admission_date }}</td>
+                        <td>
+                            {% if admission.discharge_date %}
+                                {{ admission.discharge_date }}
+                            {% else %}
+                                <span class="text-muted fst-italic">Currently Admitted</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if admission.status == 'Admitted' %}
+                                <span class="status-badge status-primary">Admitted</span>
+                            {% elif admission.status == 'Discharged' %}
+                                <span class="status-badge status-success">Discharged</span>
+                            {% else %}
+                                <span class="status-badge status-muted">{{ admission.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="action-links">
+                            <a href="{% url 'admission_detail' admission.pk %}">View</a>
+                            <a href="{% url 'admission_edit' admission.pk %}">Edit</a>
+                            {% if admission.status == 'Admitted' %}
+                                <a href="{% url 'admission_discharge' admission.pk %}" class="fw-bold text-primary">Discharge</a>
+                            {% endif %}
+                            <a class="danger-link" href="{% url 'admission_delete' admission.pk %}">Delete</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="8" class="empty-row text-center text-muted">
+                            {% if query or status_filter or room_filter or date_filter %}
+                                No admissions matched your search or filters.
+                            {% else %}
+                                No admissions recorded yet. Click "+ Admit Patient" to admit someone.
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

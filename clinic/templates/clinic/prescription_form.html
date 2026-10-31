@@ -1,0 +1,182 @@
+{% extends "clinic/base.html" %}
+
+{% block title %}{{ form_title }}{% endblock %}
+{% block page_title %}{{ form_title }}{% endblock %}
+
+{% block content %}
+<div class="panel" style="max-width: 900px;">
+    <h2>{{ form_title }}</h2>
+    <p class="panel-subtitle">Fill in the patient, doctor, and date, then add one or more medicines below.</p>
+
+    {% if not has_prerequisites %}
+        <div class="alert alert-warning mb-4">
+            <strong>Prerequisites required:</strong> You need at least one registered patient and one doctor before creating a prescription.
+            <div class="mt-2">
+                <a href="{% url 'patient_add' %}" class="btn btn-sm btn-teal me-2">+ Add Patient</a>
+                <a href="{% url 'doctor_add' %}" class="btn btn-sm btn-outline-teal">+ Add Doctor</a>
+            </div>
+        </div>
+    {% endif %}
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <!-- Prescription header fields -->
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label class="form-label" for="{{ form.patient.id_for_label }}">Patient</label>
+                {{ form.patient }}
+                {% if form.patient.errors %}<div class="field-error">{{ form.patient.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label" for="{{ form.doctor.id_for_label }}">Prescribing Doctor</label>
+                {{ form.doctor }}
+                {% if form.doctor.errors %}<div class="field-error">{{ form.doctor.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label" for="{{ form.prescription_date.id_for_label }}">Prescription Date</label>
+                {{ form.prescription_date }}
+                {% if form.prescription_date.errors %}<div class="field-error">{{ form.prescription_date.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label" for="{{ form.instructions.id_for_label }}">General Instructions <span class="text-muted">(optional)</span></label>
+            {{ form.instructions }}
+            {% if form.instructions.errors %}<div class="field-error">{{ form.instructions.errors.0 }}</div>{% endif %}
+        </div>
+
+        <!-- Inline medicine formset -->
+        <h5 class="mb-3 form-section-heading">
+            Medicines <small class="text-muted fw-normal">— at least one required</small>
+        </h5>
+
+        {{ formset.management_form }}
+
+        {% if formset.non_form_errors %}
+            <div class="alert alert-danger">
+                {% for error in formset.non_form_errors %}{{ error }}{% endfor %}
+            </div>
+        {% endif %}
+
+        <div id="medicine-formset-container">
+            {% for medicine_form in formset %}
+                <div class="medicine-row card p-3 mb-3 {% if medicine_form.instance.pk %}border-0 bg-light{% endif %}">
+                    {% if formset.can_delete %}
+                        <div class="d-flex justify-content-end mb-1">
+                            <label class="form-check-label text-danger small me-1" for="{{ medicine_form.DELETE.id_for_label }}">Remove</label>
+                            {{ medicine_form.DELETE }}
+                        </div>
+                    {% endif %}
+                    {{ medicine_form.id }}
+
+                    {% if medicine_form.non_field_errors %}
+                        <div class="alert alert-danger py-1">{{ medicine_form.non_field_errors }}</div>
+                    {% endif %}
+
+                    <div class="row g-2 mb-2">
+                        <div class="col-md-6">
+                            <label class="form-label small">Inventory Medicine <span class="text-muted">(select from stock)</span></label>
+                            {{ medicine_form.medicine }}
+                            {% if medicine_form.medicine.errors %}<div class="field-error">{{ medicine_form.medicine.errors.0 }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small">Medicine Name <span class="text-muted">(auto-filled or custom)</span></label>
+                            {{ medicine_form.medicine_name }}
+                            {% if medicine_form.medicine_name.errors %}<div class="field-error">{{ medicine_form.medicine_name.errors.0 }}</div>{% endif %}
+                        </div>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-md-3">
+                            <label class="form-label small">Dosage</label>
+                            {{ medicine_form.dosage }}
+                            {% if medicine_form.dosage.errors %}<div class="field-error">{{ medicine_form.dosage.errors.0 }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small">Frequency</label>
+                            {{ medicine_form.frequency }}
+                            {% if medicine_form.frequency.errors %}<div class="field-error">{{ medicine_form.frequency.errors.0 }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small">Duration</label>
+                            {{ medicine_form.duration }}
+                            {% if medicine_form.duration.errors %}<div class="field-error">{{ medicine_form.duration.errors.0 }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small">Qty</label>
+                            {{ medicine_form.quantity }}
+                            {% if medicine_form.quantity.errors %}<div class="field-error">{{ medicine_form.quantity.errors.0 }}</div>{% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <button type="button" id="add-medicine-btn" class="btn btn-sm btn-outline-teal mb-4">+ Add Another Medicine</button>
+
+        <div class="form-actions">
+            <button class="btn btn-teal" type="submit">{{ submit_label }}</button>
+            <a class="btn btn-light" href="{% if prescription %}{% url 'prescription_detail' prescription.pk %}{% else %}{% url 'prescription_list' %}{% endif %}">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Dynamically add new medicine rows using the Django formset empty form pattern
+    (function () {
+        const container = document.getElementById('medicine-formset-container');
+        const addBtn = document.getElementById('add-medicine-btn');
+        const totalFormsInput = document.querySelector('[name$="-TOTAL_FORMS"]');
+
+        // The empty form HTML is cloned from the last form row (Django extra=1 ensures one exists)
+        addBtn.addEventListener('click', function () {
+            const forms = container.querySelectorAll('.medicine-row');
+            const formCount = parseInt(totalFormsInput.value);
+            // Clone the last visible form row
+            const lastForm = forms[forms.length - 1];
+            const newForm = lastForm.cloneNode(true);
+
+            // Update all field IDs and names from old index to new
+            const oldIndex = formCount - 1;
+            const newIndex = formCount;
+            newForm.innerHTML = newForm.innerHTML
+                .replace(new RegExp(`medicines-${oldIndex}-`, 'g'), `medicines-${newIndex}-`);
+
+            // Clear input values in the cloned row
+            newForm.querySelectorAll('input:not([type=hidden]):not([type=checkbox]), textarea').forEach(function (el) {
+                el.value = '';
+            });
+            // Uncheck DELETE checkbox if present
+            newForm.querySelectorAll('input[type=checkbox]').forEach(function (el) {
+                el.checked = false;
+            });
+            // Remove the hidden id field value (new rows have no existing PK)
+            const idField = newForm.querySelector(`[name="medicines-${newIndex}-id"]`);
+            if (idField) idField.value = '';
+
+            container.appendChild(newForm);
+            totalFormsInput.value = newIndex + 1;
+        });
+
+        // Auto-fill Medicine Name when selecting from the inventory dropdown
+        container.addEventListener('change', function (e) {
+            if (e.target && e.target.classList.contains('medicine-select')) {
+                const row = e.target.closest('.medicine-row');
+                const nameInput = row ? row.querySelector('.medicine-name-input') : null;
+                if (nameInput && e.target.selectedIndex > 0) {
+                    const text = e.target.options[e.target.selectedIndex].text;
+                    const cleanedName = text.split(' (Batch:')[0].trim();
+                    if (!nameInput.value || nameInput.value.trim() === '') {
+                        nameInput.value = cleanedName;
+                    }
+                }
+            }
+        });
+    })();
+</script>
+{% endblock %}
+

@@ -1,0 +1,155 @@
+{% extends "clinic/base.html" %}
+
+{% block title %}Room {{ room.room_number }}{% endblock %}
+{% block page_title %}Room Details{% endblock %}
+
+{% block content %}
+<div class="panel mb-4">
+    <div class="panel-header">
+        <div>
+            <h2>Room {{ room.room_number }}</h2>
+            <p class="panel-subtitle">{{ room.room_type }} &bull; ${{ room.charges_per_day }} / day</p>
+        </div>
+        <div class="header-actions">
+            {% if not room.is_full and room.status != 'Under Maintenance' %}
+                <a class="btn btn-teal" href="{% url 'admission_add' %}?room={{ room.pk }}">+ Admit Patient</a>
+            {% endif %}
+            <a class="btn btn-outline-teal" href="{% url 'room_edit' room.pk %}">Edit</a>
+            {% if room.active_admissions_count > 0 %}
+                <button class="btn btn-secondary" disabled title="Cannot delete room with active admissions">In Use (Delete Disabled)</button>
+            {% else %}
+                <a class="btn btn-danger" href="{% url 'room_delete' room.pk %}">Delete</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <dl class="detail-grid">
+        <div>
+            <dt>Room Number</dt>
+            <dd>Room {{ room.room_number }}</dd>
+        </div>
+        <div>
+            <dt>Room Type</dt>
+            <dd>{{ room.room_type }}</dd>
+        </div>
+        <div>
+            <dt>Total Capacity</dt>
+            <dd>{{ room.bed_capacity }} bed{{ room.bed_capacity|pluralize }}</dd>
+        </div>
+        <div>
+            <dt>Current Occupancy</dt>
+            <dd>
+                <span class="fw-bold">{{ room.active_admissions_count }}</span> / {{ room.bed_capacity }} beds occupied
+                ({{ room.available_beds }} available)
+            </dd>
+        </div>
+        <div>
+            <dt>Charges Per Day</dt>
+            <dd class="fw-bold theme-emphasis">${{ room.charges_per_day }}</dd>
+        </div>
+        <div>
+            <dt>Operational Status</dt>
+            <dd>
+                {% if room.status == 'Under Maintenance' %}
+                    <span class="badge text-bg-secondary">Under Maintenance</span>
+                {% elif room.is_full %}
+                    <span class="badge text-bg-danger">Full</span>
+                {% elif room.active_admissions_count > 0 %}
+                    <span class="badge text-bg-warning text-dark">Partially Occupied</span>
+                {% else %}
+                    <span class="badge text-bg-success">Available</span>
+                {% endif %}
+            </dd>
+        </div>
+    </dl>
+</div>
+
+<!-- Active Admissions in this Room -->
+<div class="panel mb-4">
+    <div class="panel-header">
+        <div>
+            <h3>Currently Admitted Patients ({{ active_admissions.count }})</h3>
+            <p class="panel-subtitle">Patients currently occupying beds in Room {{ room.room_number }}.</p>
+        </div>
+    </div>
+
+    <div class="table-wrap">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Patient</th>
+                    <th>Phone</th>
+                    <th>Admission Date</th>
+                    <th>Reason</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for admission in active_admissions %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'patient_detail' admission.patient.pk %}" class="fw-semibold text-decoration-none theme-link">
+                                {{ admission.patient.name }}
+                            </a>
+                        </td>
+                        <td>{{ admission.patient.phone_no|default:"—" }}</td>
+                        <td>{{ admission.admission_date }}</td>
+                        <td>{{ admission.reason_for_admission|truncatewords:8 }}</td>
+                        <td class="action-links">
+                            <a href="{% url 'admission_detail' admission.pk %}">View</a>
+                            <a href="{% url 'admission_discharge' admission.pk %}" class="fw-bold text-primary">Discharge</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="empty-row text-center text-muted">
+                            No patients currently admitted in this room.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% if past_admissions %}
+<div class="panel mb-4">
+    <div class="panel-header">
+        <div>
+            <h3>Admission History</h3>
+            <p class="panel-subtitle">Past discharged patients from Room {{ room.room_number }}.</p>
+        </div>
+    </div>
+
+    <div class="table-wrap">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Patient</th>
+                    <th>Admission Date</th>
+                    <th>Discharge Date</th>
+                    <th>Reason</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for admission in past_admissions %}
+                    <tr>
+                        <td>{{ admission.patient.name }}</td>
+                        <td>{{ admission.admission_date }}</td>
+                        <td>{{ admission.discharge_date|default:"—" }}</td>
+                        <td>{{ admission.reason_for_admission|truncatewords:8 }}</td>
+                        <td class="action-links">
+                            <a href="{% url 'admission_detail' admission.pk %}">View</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+<a class="btn btn-light" href="{% url 'room_list' %}">Back to Room List</a>
+{% endblock %}
+

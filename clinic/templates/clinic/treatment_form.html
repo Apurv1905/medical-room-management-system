@@ -1,0 +1,73 @@
+{% extends "clinic/base.html" %}
+
+{% block title %}{{ form_title }}{% endblock %}
+{% block page_title %}{{ form_title }}{% endblock %}
+
+{% block content %}
+<div class="panel form-panel">
+    <h2>{{ form_title }}</h2>
+    <p class="panel-subtitle">Record the patient's diagnosis, treatment details, and clinical notes.</p>
+
+    {% if not has_prerequisites %}
+        <div class="alert alert-warning mb-4">
+            <strong>Prerequisites required:</strong> You need at least one registered patient and doctor to add a treatment.
+            <div class="mt-2">
+                <a href="{% url 'patient_add' %}" class="btn btn-sm btn-teal me-2">+ Add Patient</a>
+                <a href="{% url 'doctor_add' %}" class="btn btn-sm btn-outline-teal">+ Add Doctor</a>
+            </div>
+        </div>
+    {% endif %}
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label" for="{{ form.patient.id_for_label }}">Patient</label>
+                {{ form.patient }}
+                {% if form.patient.errors %}<div class="field-error">{{ form.patient.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label" for="{{ form.doctor.id_for_label }}">Treating Doctor</label>
+                {{ form.doctor }}
+                {% if form.doctor.errors %}<div class="field-error">{{ form.doctor.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label" for="{{ form.treatment_date.id_for_label }}">Treatment Date</label>
+                {{ form.treatment_date }}
+                {% if form.treatment_date.errors %}<div class="field-error">{{ form.treatment_date.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label" for="{{ form.diagnosis.id_for_label }}">Diagnosis</label>
+                {{ form.diagnosis }}
+                {% if form.diagnosis.errors %}<div class="field-error">{{ form.diagnosis.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="{{ form.description.id_for_label }}">Treatment Description</label>
+            {{ form.description }}
+            {% if form.description.errors %}<div class="field-error">{{ form.description.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="{{ form.notes.id_for_label }}">Additional Notes <span class="text-muted">(optional)</span></label>
+            {{ form.notes }}
+            {% if form.notes.errors %}<div class="field-error">{{ form.notes.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="form-actions">
+            <button class="btn btn-teal" type="submit">{{ submit_label }}</button>
+            <a class="btn btn-light" href="{% if treatment %}{% url 'treatment_detail' treatment.pk %}{% else %}{% url 'treatment_list' %}{% endif %}">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+

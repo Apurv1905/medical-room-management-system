@@ -1,0 +1,48 @@
+{% extends "clinic/base.html" %}
+
+{% block title %}{{ patient.name }}{% endblock %}
+{% block page_title %}Patient Details{% endblock %}
+
+{% block content %}
+<div class="panel">
+    <div class="panel-header">
+        <div>
+            <h2>{{ patient.name }}</h2>
+            <p class="panel-subtitle">Patient ID {{ patient.patient_id }}</p>
+        </div>
+        <div class="header-actions">
+            <a class="btn btn-outline-teal" href="{% url 'patient_edit' patient.pk %}">Edit</a>
+            <a class="btn btn-danger" href="{% url 'patient_delete' patient.pk %}">Delete</a>
+        </div>
+    </div>
+
+    <dl class="detail-grid">
+        <div>
+            <dt>Name</dt>
+            <dd>{{ patient.name }}</dd>
+        </div>
+        <div>
+            <dt>Date of Birth</dt>
+            <dd>{{ patient.dob|default:"—" }}</dd>
+        </div>
+        <div>
+            <dt>Gender</dt>
+            <dd>{{ patient.gender|default:"—" }}</dd>
+        </div>
+        <div>
+            <dt>Phone Number</dt>
+            <dd>{{ patient.phone_no|default:"—" }}</dd>
+        </div>
+        <div>
+            <dt>Blood Group</dt>
+            <dd>{{ patient.blood_group|default:"—" }}</dd>
+        </div>
+        <div class="full-width">
+            <dt>Address</dt>
+            <dd>{{ patient.address|default:"—" }}</dd>
+        </div>
+    </dl>
+
+    <a class="btn btn-light" href="{% url 'patient_list' %}">Back to Patient List</a>
+</div>
+{% endblock %}

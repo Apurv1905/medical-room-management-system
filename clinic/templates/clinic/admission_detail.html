@@ -1,0 +1,150 @@
+{% extends "clinic/base.html" %}
+
+{% block title %}Admission #{{ admission.admission_id }}{% endblock %}
+{% block page_title %}Admission Details{% endblock %}
+
+{% block content %}
+<div class="panel mb-4">
+    <div class="panel-header">
+        <div>
+            <h2>Admission #{{ admission.admission_id }}</h2>
+            <p class="panel-subtitle">
+                Patient: <strong>{{ admission.patient.name }}</strong> &bull;
+                Room: <strong>Room {{ admission.room.room_number }}</strong>
+            </p>
+        </div>
+        <div class="header-actions">
+            {% if admission.status == 'Admitted' %}
+                <a class="btn btn-primary" href="{% url 'admission_discharge' admission.pk %}">Discharge Patient</a>
+            {% endif %}
+            <a class="btn btn-outline-teal" href="{% url 'admission_edit' admission.pk %}">Edit</a>
+            <a class="btn btn-danger" href="{% url 'admission_delete' admission.pk %}">Delete</a>
+        </div>
+    </div>
+
+    <dl class="detail-grid">
+        <div>
+            <dt>Admission ID</dt>
+            <dd>#{{ admission.admission_id }}</dd>
+        </div>
+        <div>
+            <dt>Admission Status</dt>
+            <dd>
+                {% if admission.status == 'Admitted' %}
+                    <span class="badge text-bg-primary">Admitted</span>
+                {% elif admission.status == 'Discharged' %}
+                    <span class="badge text-bg-success">Discharged</span>
+                {% else %}
+                    <span class="badge text-bg-light">{{ admission.status }}</span>
+                {% endif %}
+            </dd>
+        </div>
+        <div>
+            <dt>Admission Date</dt>
+            <dd>{{ admission.admission_date }}</dd>
+        </div>
+        <div>
+            <dt>Discharge Date</dt>
+            <dd>
+                {% if admission.discharge_date %}
+                    {{ admission.discharge_date }}
+                {% else %}
+                    <span class="text-muted fst-italic">Currently Admitted</span>
+                {% endif %}
+            </dd>
+        </div>
+        <div>
+            <dt>Duration of Stay</dt>
+            <dd>{{ days_admitted }} day{{ days_admitted|pluralize }}</dd>
+        </div>
+        <div>
+            <dt>Estimated Room Charges</dt>
+            <dd class="fw-bold theme-emphasis">${{ estimated_charges }} (${{ admission.room.charges_per_day }}/day)</dd>
+        </div>
+        <div class="full-width">
+            <dt>Reason for Admission</dt>
+            <dd style="white-space: pre-wrap; font-weight: normal;">{{ admission.reason_for_admission }}</dd>
+        </div>
+    </dl>
+</div>
+
+<div class="row">
+    <!-- Patient Info Card -->
+    <div class="col-md-6 mb-4">
+        <div class="panel h-100">
+            <div class="panel-header mb-3">
+                <h3 class="h5 mb-0">Patient Information</h3>
+                <a href="{% url 'patient_detail' admission.patient.pk %}" class="btn btn-sm btn-outline-teal">View Patient</a>
+            </div>
+            <dl class="detail-grid mb-0">
+                <div>
+                    <dt>Name</dt>
+                    <dd>{{ admission.patient.name }}</dd>
+                </div>
+                <div>
+                    <dt>Blood Group</dt>
+                    <dd>{{ admission.patient.blood_group|default:"—" }}</dd>
+                </div>
+                <div>
+                    <dt>Gender</dt>
+                    <dd>{{ admission.patient.gender|default:"—" }}</dd>
+                </div>
+                <div>
+                    <dt>Phone</dt>
+                    <dd>{{ admission.patient.phone_no|default:"—" }}</dd>
+                </div>
+                <div class="full-width">
+                    <dt>Address</dt>
+                    <dd>{{ admission.patient.address|default:"—" }}</dd>
+                </div>
+            </dl>
+        </div>
+    </div>
+
+    <!-- Room Info Card -->
+    <div class="col-md-6 mb-4">
+        <div class="panel h-100">
+            <div class="panel-header mb-3">
+                <h3 class="h5 mb-0">Room Information</h3>
+                <a href="{% url 'room_detail' admission.room.pk %}" class="btn btn-sm btn-outline-teal">View Room</a>
+            </div>
+            <dl class="detail-grid mb-0">
+                <div>
+                    <dt>Room Number</dt>
+                    <dd>Room {{ admission.room.room_number }}</dd>
+                </div>
+                <div>
+                    <dt>Type</dt>
+                    <dd>{{ admission.room.room_type }}</dd>
+                </div>
+                <div>
+                    <dt>Bed Capacity</dt>
+                    <dd>{{ admission.room.bed_capacity }} bed{{ admission.room.bed_capacity|pluralize }}</dd>
+                </div>
+                <div>
+                    <dt>Daily Tariff</dt>
+                    <dd>${{ admission.room.charges_per_day }}</dd>
+                </div>
+                <div class="full-width">
+                    <dt>Live Room Status</dt>
+                    <dd>
+                        {% if admission.room.status == 'Under Maintenance' %}
+                            <span class="badge text-bg-secondary">Maintenance</span>
+                        {% elif admission.room.is_full %}
+                            <span class="badge text-bg-danger">Full</span>
+                        {% elif admission.room.active_admissions_count > 0 %}
+                            <span class="badge text-bg-warning text-dark">Partially Occupied</span>
+                        {% else %}
+                            <span class="badge text-bg-success">Available</span>
+                        {% endif %}
+                        <small class="text-muted ms-2">({{ admission.room.active_admissions_count }}/{{ admission.room.bed_capacity }} beds occupied)</small>
+                    </dd>
+                </div>
+            </dl>
+        </div>
+    </div>
+</div>
+
+<a class="btn btn-light" href="{% url 'admission_list' %}">Back to Admission List</a>
+{% endblock %}
+

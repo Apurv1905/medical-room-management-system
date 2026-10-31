@@ -1,0 +1,175 @@
+{% extends "clinic/base.html" %}
+
+{% block title %}Prescription #{{ prescription.prescription_id }}{% endblock %}
+{% block page_title %}Prescription Details{% endblock %}
+
+{% block content %}
+<div class="panel mb-4">
+    <div class="panel-header">
+        <div>
+            <h2>Prescription #{{ prescription.prescription_id }}</h2>
+            <p class="panel-subtitle">
+                Patient: <strong>{{ prescription.patient.name }}</strong> &bull;
+                Doctor: <strong>{{ prescription.doctor.name }}</strong> &bull;
+                Date: {{ prescription.prescription_date }}
+            </p>
+        </div>
+        <div class="header-actions">
+            <a class="btn btn-outline-teal" href="{% url 'prescription_edit' prescription.pk %}">Edit</a>
+            <a class="btn btn-danger" href="{% url 'prescription_delete' prescription.pk %}">Delete</a>
+        </div>
+    </div>
+
+    <dl class="detail-grid">
+        <div>
+            <dt>Prescription ID</dt>
+            <dd>#{{ prescription.prescription_id }}</dd>
+        </div>
+        <div>
+            <dt>Date</dt>
+            <dd>{{ prescription.prescription_date }}</dd>
+        </div>
+        <div>
+            <dt>Patient</dt>
+            <dd>
+                <a href="{% url 'patient_detail' prescription.patient.pk %}" class="theme-link fw-bold text-decoration-none">
+                    {{ prescription.patient.name }}
+                </a>
+                <small class="text-muted d-block">{{ prescription.patient.phone_no|default:"" }}</small>
+            </dd>
+        </div>
+        <div>
+            <dt>Prescribing Doctor</dt>
+            <dd>
+                <a href="{% url 'doctor_detail' prescription.doctor.pk %}" class="theme-link fw-bold text-decoration-none">
+                    {{ prescription.doctor.name }}
+                </a>
+                {% if prescription.doctor.specialization %}
+                    <small class="text-muted d-block">{{ prescription.doctor.specialization }}</small>
+                {% endif %}
+            </dd>
+        </div>
+        {% if prescription.instructions %}
+        <div class="full-width">
+            <dt>General Instructions</dt>
+            <dd style="white-space: pre-wrap; font-weight: normal;">{{ prescription.instructions }}</dd>
+        </div>
+        {% endif %}
+    </dl>
+</div>
+
+<!-- Medicine Table -->
+<div class="panel mb-4">
+    <div class="panel-header">
+        <div>
+            <h3>Medicines Prescribed ({{ medicines.count }})</h3>
+            <p class="panel-subtitle">Full medication list and dispensing status for Prescription #{{ prescription.prescription_id }}.</p>
+        </div>
+        {% if prescription.is_fully_dispensed %}
+            <span class="badge bg-success fs-6">Fully Dispensed</span>
+        {% elif prescription.has_dispensable_medicines %}
+            <span class="badge bg-warning text-dark fs-6">Pending Dispensing</span>
+        {% endif %}
+    </div>
+
+    <div class="table-wrap">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Medicine Name</th>
+                    <th>Dosage</th>
+                    <th>Frequency</th>
+                    <th>Duration</th>
+                    <th>Quantity</th>
+                    <th>Inventory Stock</th>
+                    <th>Dispense Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for med in medicines %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td class="fw-semibold">
+                            {{ med.medicine_name }}
+                            {% if med.medicine %}
+                                <div class="small text-muted">
+                                    <a href="{% url 'medicine_detail' med.medicine.pk %}" class="text-decoration-none">
+                                        Batch: {{ med.medicine.batch_number }} &bull; {{ med.medicine.category }}
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </td>
+                        <td>{{ med.dosage }}</td>
+                        <td>{{ med.frequency }}</td>
+                        <td>{{ med.duration }}</td>
+                        <td>{{ med.quantity }}</td>
+                        <td>
+                            {% if med.medicine %}
+                                {% if med.medicine.stock_quantity >= med.quantity %}
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                        {{ med.medicine.stock_quantity }} available
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle">
+                                        Shortage: {{ med.medicine.stock_quantity }} available
+                                    </span>
+                                {% endif %}
+                                {% if med.medicine.is_expired %}
+                                    <span class="badge bg-danger d-block mt-1">Expired</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="text-muted small">Not linked to inventory</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if med.is_dispensed %}
+                                <span class="badge bg-success">
+                                    Dispensed {% if med.dispensed_at %}({{ med.dispensed_at|date:"M d, H:i" }}){% endif %}
+                                </span>
+                            {% elif med.medicine %}
+                                <span class="badge bg-warning text-dark">Pending Dispense</span>
+                            {% else %}
+                                <span class="badge bg-light text-secondary">External / Custom</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="8" class="empty-row text-muted">No medicines added to this prescription.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% if prescription.has_dispensable_medicines %}
+<div class="panel mb-4 bg-light border">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div>
+            <h4 class="mb-1 theme-emphasis">Pharmacy Dispensing Workflow</h4>
+            <p class="text-muted mb-0 small">
+                Prescriptions do not automatically deduct inventory stock upon creation. Click below to explicitly dispense the prescribed medications and update stock levels.
+            </p>
+        </div>
+        <form method="post" action="{% url 'prescription_dispense' prescription.pk %}" onsubmit="return confirm('Confirm dispensing medications for Prescription #{{ prescription.prescription_id }}? This will deduct the required quantities from inventory.');">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-teal">
+                &check; Dispense Medicines & Deduct Stock
+            </button>
+        </form>
+    </div>
+</div>
+{% elif prescription.is_fully_dispensed %}
+<div class="alert alert-success d-flex align-items-center mb-4">
+    <span class="fs-5 me-2">&check;</span>
+    <div>
+        <strong>Dispensing Completed:</strong> All inventory medicines for this prescription have been dispensed and subtracted from inventory stock.
+    </div>
+</div>
+{% endif %}
+
+<a class="btn btn-light" href="{% url 'prescription_list' %}">Back to Prescriptions</a>
+{% endblock %}
+

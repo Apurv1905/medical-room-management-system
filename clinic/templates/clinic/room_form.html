@@ -1,0 +1,56 @@
+{% extends "clinic/base.html" %}
+
+{% block title %}{{ form_title }}{% endblock %}
+{% block page_title %}{{ form_title }}{% endblock %}
+
+{% block content %}
+<div class="panel form-panel">
+    <h2>{{ form_title }}</h2>
+    <p class="panel-subtitle">Configure room specifications, daily tariff, and operational capacity.</p>
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label" for="{{ form.room_number.id_for_label }}">Room Number</label>
+                {{ form.room_number }}
+                {% if form.room_number.errors %}<div class="field-error">{{ form.room_number.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label" for="{{ form.room_type.id_for_label }}">Room Type</label>
+                {{ form.room_type }}
+                {% if form.room_type.errors %}<div class="field-error">{{ form.room_type.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label class="form-label" for="{{ form.bed_capacity.id_for_label }}">Bed Capacity</label>
+                {{ form.bed_capacity }}
+                {% if form.bed_capacity.errors %}<div class="field-error">{{ form.bed_capacity.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label" for="{{ form.charges_per_day.id_for_label }}">Charges Per Day ($)</label>
+                {{ form.charges_per_day }}
+                {% if form.charges_per_day.errors %}<div class="field-error">{{ form.charges_per_day.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label" for="{{ form.status.id_for_label }}">Operational Status</label>
+                {{ form.status }}
+                {% if form.status.errors %}<div class="field-error">{{ form.status.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn btn-teal" type="submit">{{ submit_label }}</button>
+            <a class="btn btn-light" href="{% if room %}{% url 'room_detail' room.pk %}{% else %}{% url 'room_list' %}{% endif %}">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+

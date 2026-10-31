@@ -1,0 +1,196 @@
+{% extends "clinic/base.html" %}
+
+{% block title %}{{ medicine.name }}{% endblock %}
+{% block page_title %}Medicine Details{% endblock %}
+
+{% block content %}
+<div class="panel mb-4">
+    <div class="panel-header">
+        <div>
+            <h2>{{ medicine.name }}</h2>
+            <p class="panel-subtitle">
+                Category: <strong>{{ medicine.category }}</strong> &bull;
+                Manufacturer: <strong>{{ medicine.manufacturer }}</strong> &bull;
+                Batch: <span class="font-monospace fw-semibold">{{ medicine.batch_number }}</span>
+            </p>
+            <div class="mt-2">
+                {% if medicine.is_out_of_stock %}
+                    <span class="badge bg-danger fs-6">Out of Stock</span>
+                {% elif medicine.is_low_stock %}
+                    <span class="badge bg-warning text-dark fs-6">Low Stock ({{ medicine.stock_quantity }} units left)</span>
+                {% else %}
+                    <span class="badge bg-success fs-6">In Stock ({{ medicine.stock_quantity }} units)</span>
+                {% endif %}
+
+                {% if medicine.is_expired %}
+                    <span class="badge bg-danger fs-6 ms-1">Expired ({{ medicine.expiry_date }})</span>
+                {% elif medicine.is_expiring_soon %}
+                    <span class="badge bg-warning text-dark fs-6 ms-1">Expiring Soon ({{ medicine.expiry_date }})</span>
+                {% else %}
+                    <span class="badge bg-light text-secondary border fs-6 ms-1">Valid until {{ medicine.expiry_date }}</span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="header-actions flex-wrap gap-2">
+            <a class="btn btn-teal" href="{% url 'medicine_stock_in' medicine.pk %}">+ Stock In</a>
+            <a class="btn btn-outline-teal" href="{% url 'medicine_stock_adjust' medicine.pk %}">Adjust Stock</a>
+            <a class="btn btn-outline-secondary" href="{% url 'medicine_edit' medicine.pk %}">Edit</a>
+            <a class="btn btn-danger" href="{% url 'medicine_delete' medicine.pk %}">Delete</a>
+        </div>
+    </div>
+
+    <dl class="detail-grid">
+        <div>
+            <dt>Medicine ID</dt>
+            <dd>#{{ medicine.medicine_id }}</dd>
+        </div>
+        <div>
+            <dt>Batch Number</dt>
+            <dd class="font-monospace">{{ medicine.batch_number }}</dd>
+        </div>
+        <div>
+            <dt>Category</dt>
+            <dd>{{ medicine.category }}</dd>
+        </div>
+        <div>
+            <dt>Manufacturer</dt>
+            <dd>{{ medicine.manufacturer }}</dd>
+        </div>
+        <div>
+            <dt>Purchase Price</dt>
+            <dd>${{ medicine.purchase_price }}</dd>
+        </div>
+        <div>
+            <dt>Selling Price</dt>
+            <dd>${{ medicine.selling_price }}</dd>
+        </div>
+        <div>
+            <dt>Current Available Stock</dt>
+            <dd class="fs-5 {% if medicine.is_out_of_stock %}text-danger{% elif medicine.is_low_stock %}text-warning-emphasis{% else %}text-success{% endif %}">
+                {{ medicine.stock_quantity }} units
+            </dd>
+        </div>
+        <div>
+            <dt>Minimum Stock Threshold</dt>
+            <dd>{{ medicine.min_stock_threshold }} units</dd>
+        </div>
+        <div>
+            <dt>Expiry Date</dt>
+            <dd>{{ medicine.expiry_date }}</dd>
+        </div>
+        <div>
+            <dt>Total Stock Valuation (Cost)</dt>
+            <dd>${{ medicine.stock_quantity }} &times; ${{ medicine.purchase_price }}</dd>
+        </div>
+    </dl>
+</div>
+
+<!-- Stock Movement Audit Trail -->
+<div class="panel mb-4">
+    <div class="panel-header">
+        <div>
+            <h3>Stock Movement History</h3>
+            <p class="panel-subtitle">Audit trail of stock additions, adjustments, and prescription dispensing.</p>
+        </div>
+        <a href="{% url 'medicine_stock_in' medicine.pk %}" class="btn btn-sm btn-outline-teal">+ Receive Stock</a>
+    </div>
+
+    <div class="table-wrap">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Date & Time</th>
+                    <th>Action / Type</th>
+                    <th>Quantity Change</th>
+                    <th>Resulting Stock</th>
+                    <th>Notes & Remarks</th>
+                    <th>Recorded By</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in recent_movements %}
+                    <tr>
+                        <td class="small">{{ log.created_at|date:"Y-m-d H:i" }}</td>
+                        <td>
+                            {% if log.movement_type == 'Stock In' %}
+                                <span class="badge bg-success-subtle text-success border">Stock In</span>
+                            {% elif log.movement_type == 'Dispensed' %}
+                                <span class="badge bg-primary-subtle text-primary border">Dispensed</span>
+                            {% elif log.movement_type == 'Initial Stock' %}
+                                <span class="badge bg-info-subtle text-info-emphasis border">Initial Stock</span>
+                            {% else %}
+                                <span class="badge bg-warning-subtle text-warning-emphasis border">{{ log.movement_type }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="fw-bold {% if log.quantity_change > 0 %}text-success{% else %}text-danger{% endif %}">
+                            {{ log.quantity_change|stringformat:"+d" }}
+                        </td>
+                        <td class="fw-semibold">{{ log.resulting_stock }}</td>
+                        <td>{{ log.notes|default:"—" }}</td>
+                        <td class="small text-muted">{{ log.created_by.username|default:"System" }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6" class="empty-row text-muted">No stock movements recorded yet.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Prescriptions Referencing This Medicine -->
+<div class="panel mb-4">
+    <div class="panel-header">
+        <div>
+            <h3>Prescription Usage</h3>
+            <p class="panel-subtitle">Recent prescriptions that include this medicine.</p>
+        </div>
+    </div>
+
+    <div class="table-wrap">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Prescription</th>
+                    <th>Date</th>
+                    <th>Patient</th>
+                    <th>Doctor</th>
+                    <th>Dosage & Frequency</th>
+                    <th>Prescribed Qty</th>
+                    <th>Dispensed Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in recent_prescriptions %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'prescription_detail' item.prescription.pk %}" class="fw-semibold text-decoration-none">
+                                Prescription #{{ item.prescription.prescription_id }}
+                            </a>
+                        </td>
+                        <td>{{ item.prescription.prescription_date }}</td>
+                        <td>{{ item.prescription.patient.name }}</td>
+                        <td>{{ item.prescription.doctor.name }}</td>
+                        <td>{{ item.dosage }} ({{ item.frequency }})</td>
+                        <td class="fw-semibold">{{ item.quantity }}</td>
+                        <td>
+                            {% if item.is_dispensed %}
+                                <span class="badge bg-success">Dispensed</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">Pending Dispense</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="7" class="empty-row text-muted">No prescriptions have referenced this medicine yet.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<a class="btn btn-light" href="{% url 'medicine_list' %}">&larr; Back to Medicine Inventory</a>
+{% endblock %}

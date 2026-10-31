@@ -1,0 +1,24 @@
+{% extends "clinic/base.html" %}
+
+{% block title %}Delete Doctor{% endblock %}
+{% block page_title %}Delete Doctor{% endblock %}
+
+{% block content %}
+<div class="panel form-panel">
+    <h2>Delete this doctor?</h2>
+    <p class="panel-subtitle">
+        This will permanently remove <strong>{{ doctor.name }}</strong>
+        (Doctor ID {{ doctor.doctor_id }}) from the system.
+        This action cannot be undone.
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-actions">
+            <button class="btn btn-danger" type="submit">Yes, delete doctor</button>
+            <a class="btn btn-light" href="{% url 'doctor_detail' doctor.pk %}">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+

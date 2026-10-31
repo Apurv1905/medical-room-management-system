@@ -1,0 +1,68 @@
+{% extends "clinic/base.html" %}
+
+{% block title %}Stock Adjustment: {{ medicine.name }}{% endblock %}
+{% block page_title %}Adjust Inventory Stock{% endblock %}
+
+{% block content %}
+<div class="panel form-panel">
+    <h2>Stock Reconciliation & Adjustment</h2>
+    <p class="panel-subtitle">
+        Adjust inventory count for <strong>{{ medicine.name }}</strong> (Batch: <span class="font-monospace">{{ medicine.batch_number }}</span>).
+    </p>
+
+    <!-- Current Stock Snapshot -->
+    <div class="card p-3 mb-4 bg-light border-0">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <span class="text-muted small">Current Recorded Stock:</span>
+                <span class="fs-4 fw-bold ms-2">{{ medicine.stock_quantity }} units</span>
+            </div>
+            <div>
+                <span class="text-muted small">Minimum Threshold:</span>
+                <span class="fw-semibold ms-1">{{ medicine.min_stock_threshold }} units</span>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger mb-3">
+                {% for error in form.non_field_errors %}{{ error }}<br>{% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label class="form-label" for="{{ form.action.id_for_label }}">Adjustment Action *</label>
+                {{ form.action }}
+                {% if form.action.errors %}<div class="field-error">{{ form.action.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" for="{{ form.quantity.id_for_label }}">Quantity *</label>
+                {{ form.quantity }}
+                {% if form.quantity.errors %}<div class="field-error">{{ form.quantity.errors.0 }}</div>{% endif %}
+                <small class="text-muted">Units to add, deduct, or set as new exact count.</small>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="{{ form.reason.id_for_label }}">Reason for Adjustment *</label>
+            {{ form.reason }}
+            {% if form.reason.errors %}<div class="field-error">{{ form.reason.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label" for="{{ form.notes.id_for_label }}">Audit Notes / Observations <span class="text-muted">(optional)</span></label>
+            {{ form.notes }}
+            {% if form.notes.errors %}<div class="field-error">{{ form.notes.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="form-actions">
+            <button class="btn btn-teal" type="submit">{{ submit_label }}</button>
+            <a class="btn btn-light" href="{% url 'medicine_detail' medicine.pk %}">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

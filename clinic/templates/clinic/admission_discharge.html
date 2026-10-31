@@ -1,0 +1,38 @@
+{% extends "clinic/base.html" %}
+
+{% block title %}Discharge {{ admission.patient.name }}{% endblock %}
+{% block page_title %}Patient Discharge{% endblock %}
+
+{% block content %}
+<div class="panel form-panel">
+    <h2>Discharge Patient {{ admission.patient.name }}</h2>
+    <p class="panel-subtitle">
+        Confirm the discharge of <strong>{{ admission.patient.name }}</strong>
+        from <strong>Room {{ admission.room.room_number }}</strong>.
+        Admitted on: <strong>{{ admission.admission_date }}</strong>.
+    </p>
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <div class="mb-3">
+            <label class="form-label" for="{{ form.discharge_date.id_for_label }}">Discharge Date</label>
+            {{ form.discharge_date }}
+            {% if form.discharge_date.errors %}
+                <div class="field-error">{{ form.discharge_date.errors.0 }}</div>
+            {% endif %}
+            <small class="text-muted">Must be on or after the admission date ({{ admission.admission_date }}).</small>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Confirm Discharge</button>
+            <a class="btn btn-light" href="{% url 'admission_detail' admission.pk %}">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+

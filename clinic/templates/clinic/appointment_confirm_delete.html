@@ -1,0 +1,25 @@
+{% extends "clinic/base.html" %}
+
+{% block title %}Delete Appointment{% endblock %}
+{% block page_title %}Delete Appointment{% endblock %}
+
+{% block content %}
+<div class="panel form-panel">
+    <h2>Delete this appointment?</h2>
+    <p class="panel-subtitle">
+        This will permanently remove <strong>Appointment #{{ appointment.appointment_id }}</strong>
+        for <strong>{{ appointment.patient.name }}</strong> with <strong>{{ appointment.doctor.name }}</strong>
+        on {{ appointment.appointment_date }} at {{ appointment.appointment_time|time:"H:i" }}.
+        This action cannot be undone.
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-actions">
+            <button class="btn btn-danger" type="submit">Yes, delete appointment</button>
+            <a class="btn btn-light" href="{% url 'appointment_detail' appointment.pk %}">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+

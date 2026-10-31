@@ -1,0 +1,75 @@
+{% extends "clinic/base.html" %}
+
+{% block title %}Appointment #{{ appointment.appointment_id }}{% endblock %}
+{% block page_title %}Appointment Details{% endblock %}
+
+{% block content %}
+<div class="panel">
+    <div class="panel-header">
+        <div>
+            <h2>Appointment #{{ appointment.appointment_id }}</h2>
+            <p class="panel-subtitle">Scheduled with {{ appointment.doctor.name }} for {{ appointment.patient.name }}</p>
+        </div>
+        <div class="header-actions">
+            <a class="btn btn-outline-teal" href="{% url 'appointment_edit' appointment.pk %}">Edit</a>
+            <a class="btn btn-danger" href="{% url 'appointment_delete' appointment.pk %}">Delete</a>
+        </div>
+    </div>
+
+    <dl class="detail-grid">
+        <div>
+            <dt>Appointment ID</dt>
+            <dd>#{{ appointment.appointment_id }}</dd>
+        </div>
+        <div>
+            <dt>Status</dt>
+            <dd>
+                {% if appointment.status == 'Scheduled' %}
+                    <span class="badge text-bg-primary">Scheduled</span>
+                {% elif appointment.status == 'Completed' %}
+                    <span class="badge text-bg-success">Completed</span>
+                {% elif appointment.status == 'Cancelled' %}
+                    <span class="badge text-bg-secondary">Cancelled</span>
+                {% else %}
+                    <span class="badge text-bg-light">{{ appointment.status }}</span>
+                {% endif %}
+            </dd>
+        </div>
+        <div>
+            <dt>Patient</dt>
+            <dd>
+                <a href="{% url 'patient_detail' appointment.patient.pk %}" class="theme-link text-decoration-none fw-bold">
+                    {{ appointment.patient.name }}
+                </a>
+                <small class="text-muted d-block">ID: {{ appointment.patient.patient_id }} | Phone: {{ appointment.patient.phone_no|default:"—" }}</small>
+            </dd>
+        </div>
+        <div>
+            <dt>Doctor</dt>
+            <dd>
+                <a href="{% url 'doctor_detail' appointment.doctor.pk %}" class="theme-link text-decoration-none fw-bold">
+                    {{ appointment.doctor.name }}
+                </a>
+                {% if appointment.doctor.specialization %}
+                    <small class="text-muted d-block">{{ appointment.doctor.specialization }}</small>
+                {% endif %}
+            </dd>
+        </div>
+        <div>
+            <dt>Date</dt>
+            <dd>{{ appointment.appointment_date }}</dd>
+        </div>
+        <div>
+            <dt>Time</dt>
+            <dd>{{ appointment.appointment_time|time:"H:i" }}</dd>
+        </div>
+        <div class="full-width">
+            <dt>Reason for Visit</dt>
+            <dd style="white-space: pre-wrap; font-weight: normal;">{{ appointment.reason_for_visit }}</dd>
+        </div>
+    </dl>
+
+    <a class="btn btn-light" href="{% url 'appointment_list' %}">Back to Appointment List</a>
+</div>
+{% endblock %}
+

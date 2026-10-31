@@ -1,0 +1,73 @@
+{% extends "clinic/base.html" %}
+
+{% block title %}{{ form_title }}{% endblock %}
+{% block page_title %}{{ form_title }}{% endblock %}
+
+{% block content %}
+<div class="panel form-panel">
+    <h2>{{ form_title }}</h2>
+    <p class="panel-subtitle">Assign a patient to an available room and document admission details.</p>
+
+    {% if not has_prerequisites %}
+        <div class="alert alert-warning mb-4">
+            <strong>Prerequisites required:</strong> You must have at least one registered patient and one room before recording an admission.
+            <div class="mt-2">
+                <a href="{% url 'patient_add' %}" class="btn btn-sm btn-teal me-2">+ Add Patient</a>
+                <a href="{% url 'room_add' %}" class="btn btn-sm btn-outline-teal">+ Add Room</a>
+            </div>
+        </div>
+    {% endif %}
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label" for="{{ form.patient.id_for_label }}">Patient</label>
+                {{ form.patient }}
+                {% if form.patient.errors %}<div class="field-error">{{ form.patient.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label" for="{{ form.room.id_for_label }}">Room</label>
+                {{ form.room }}
+                {% if form.room.errors %}<div class="field-error">{{ form.room.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label class="form-label" for="{{ form.admission_date.id_for_label }}">Admission Date</label>
+                {{ form.admission_date }}
+                {% if form.admission_date.errors %}<div class="field-error">{{ form.admission_date.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label" for="{{ form.discharge_date.id_for_label }}">Discharge Date (Optional)</label>
+                {{ form.discharge_date }}
+                {% if form.discharge_date.errors %}<div class="field-error">{{ form.discharge_date.errors.0 }}</div>{% endif %}
+                <small class="text-muted">Leave empty if patient is currently admitted.</small>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label" for="{{ form.status.id_for_label }}">Status</label>
+                {{ form.status }}
+                {% if form.status.errors %}<div class="field-error">{{ form.status.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="{{ form.reason_for_admission.id_for_label }}">Reason for Admission</label>
+            {{ form.reason_for_admission }}
+            {% if form.reason_for_admission.errors %}<div class="field-error">{{ form.reason_for_admission.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="form-actions">
+            <button class="btn btn-teal" type="submit">{{ submit_label }}</button>
+            <a class="btn btn-light" href="{% if admission %}{% url 'admission_detail' admission.pk %}{% else %}{% url 'admission_list' %}{% endif %}">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+

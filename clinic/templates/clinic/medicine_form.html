@@ -1,0 +1,85 @@
+{% extends "clinic/base.html" %}
+
+{% block title %}{{ form_title }}{% endblock %}
+{% block page_title %}{{ form_title }}{% endblock %}
+
+{% block content %}
+<div class="panel form-panel">
+    <h2>{{ form_title }}</h2>
+    <p class="panel-subtitle">Provide medicine details, batch identifier, pricing, stock levels, and expiry date.</p>
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger mb-3">
+                {% for error in form.non_field_errors %}{{ error }}<br>{% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-7">
+                <label class="form-label" for="{{ form.name.id_for_label }}">Medicine Name *</label>
+                {{ form.name }}
+                {% if form.name.errors %}<div class="field-error">{{ form.name.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="col-md-5">
+                <label class="form-label" for="{{ form.category.id_for_label }}">Category *</label>
+                {{ form.category }}
+                {% if form.category.errors %}<div class="field-error">{{ form.category.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label class="form-label" for="{{ form.manufacturer.id_for_label }}">Manufacturer *</label>
+                {{ form.manufacturer }}
+                {% if form.manufacturer.errors %}<div class="field-error">{{ form.manufacturer.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" for="{{ form.batch_number.id_for_label }}">Batch Number *</label>
+                {{ form.batch_number }}
+                {% if form.batch_number.errors %}<div class="field-error">{{ form.batch_number.errors.0 }}</div>{% endif %}
+                <small class="text-muted">Must be unique for tracking.</small>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label class="form-label" for="{{ form.purchase_price.id_for_label }}">Purchase Price ($) *</label>
+                {{ form.purchase_price }}
+                {% if form.purchase_price.errors %}<div class="field-error">{{ form.purchase_price.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" for="{{ form.selling_price.id_for_label }}">Selling Price ($) *</label>
+                {{ form.selling_price }}
+                {% if form.selling_price.errors %}<div class="field-error">{{ form.selling_price.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-4">
+                <label class="form-label" for="{{ form.stock_quantity.id_for_label }}">Available Stock Quantity *</label>
+                {{ form.stock_quantity }}
+                {% if form.stock_quantity.errors %}<div class="field-error">{{ form.stock_quantity.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label" for="{{ form.min_stock_threshold.id_for_label }}">Minimum Stock Threshold *</label>
+                {{ form.min_stock_threshold }}
+                {% if form.min_stock_threshold.errors %}<div class="field-error">{{ form.min_stock_threshold.errors.0 }}</div>{% endif %}
+                <small class="text-muted">Triggers low-stock warning.</small>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label" for="{{ form.expiry_date.id_for_label }}">Expiry Date *</label>
+                {{ form.expiry_date }}
+                {% if form.expiry_date.errors %}<div class="field-error">{{ form.expiry_date.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
+
+        <div class="form-actions mt-4">
+            <button class="btn btn-teal" type="submit">{{ submit_label }}</button>
+            <a class="btn btn-light" href="{% if medicine %}{% url 'medicine_detail' medicine.pk %}{% else %}{% url 'medicine_list' %}{% endif %}">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

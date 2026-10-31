@@ -1,0 +1,45 @@
+{% extends "clinic/base.html" %}
+
+{% block title %}{{ doctor.name }}{% endblock %}
+{% block page_title %}Doctor Details{% endblock %}
+
+{% block content %}
+<div class="panel">
+    <div class="panel-header">
+        <div>
+            <h2>{{ doctor.name }}</h2>
+            <p class="panel-subtitle">Doctor ID {{ doctor.doctor_id }}</p>
+        </div>
+        <div class="header-actions">
+            <a class="btn btn-outline-teal" href="{% url 'doctor_edit' doctor.pk %}">Edit</a>
+            <a class="btn btn-danger" href="{% url 'doctor_delete' doctor.pk %}">Delete</a>
+        </div>
+    </div>
+
+    <dl class="detail-grid">
+        <div>
+            <dt>Doctor ID</dt>
+            <dd>{{ doctor.doctor_id }}</dd>
+        </div>
+        <div>
+            <dt>Name</dt>
+            <dd>{{ doctor.name }}</dd>
+        </div>
+        <div>
+            <dt>Specialization</dt>
+            <dd>{{ doctor.specialization|default:"—" }}</dd>
+        </div>
+        <div>
+            <dt>Phone Number</dt>
+            <dd>{{ doctor.phone_no|default:"—" }}</dd>
+        </div>
+        <div class="full-width">
+            <dt>Email</dt>
+            <dd>{{ doctor.email|default:"—" }}</dd>
+        </div>
+    </dl>
+
+    <a class="btn btn-light" href="{% url 'doctor_list' %}">Back to Doctor List</a>
+</div>
+{% endblock %}
+

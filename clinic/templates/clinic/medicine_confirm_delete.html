@@ -1,0 +1,26 @@
+{% extends "clinic/base.html" %}
+
+{% block title %}Delete Medicine{% endblock %}
+{% block page_title %}Delete Medicine{% endblock %}
+
+{% block content %}
+<div class="panel form-panel">
+    <h2>Delete this medicine?</h2>
+    <p class="panel-subtitle">
+        This will permanently remove <strong>{{ medicine.name }}</strong> (Batch: <span class="font-monospace">{{ medicine.batch_number }}</span>)
+        from the inventory. This action cannot be undone.
+    </p>
+
+    <div class="alert alert-warning">
+        <strong>Warning:</strong> Current available stock is <strong>{{ medicine.stock_quantity }} units</strong>. Deleting this medicine record will also remove its associated stock movement logs.
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-actions">
+            <button class="btn btn-danger" type="submit">Yes, delete medicine</button>
+            <a class="btn btn-light" href="{% url 'medicine_detail' medicine.pk %}">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

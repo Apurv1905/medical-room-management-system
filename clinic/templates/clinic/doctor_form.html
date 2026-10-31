@@ -1,0 +1,50 @@
+{% extends "clinic/base.html" %}
+
+{% block title %}{{ form_title }}{% endblock %}
+{% block page_title %}{{ form_title }}{% endblock %}
+
+{% block content %}
+<div class="panel form-panel">
+    <h2>{{ form_title }}</h2>
+    <p class="panel-subtitle">All fields are required. Please enter accurate doctor information.</p>
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <div class="mb-3">
+            <label class="form-label" for="{{ form.name.id_for_label }}">Doctor Name</label>
+            {{ form.name }}
+            {% if form.name.errors %}<div class="field-error">{{ form.name.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="{{ form.specialization.id_for_label }}">Specialization</label>
+            {{ form.specialization }}
+            {% if form.specialization.errors %}<div class="field-error">{{ form.specialization.errors.0 }}</div>{% endif %}
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label" for="{{ form.phone_no.id_for_label }}">Phone Number</label>
+                {{ form.phone_no }}
+                {% if form.phone_no.errors %}<div class="field-error">{{ form.phone_no.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label" for="{{ form.email.id_for_label }}">Email</label>
+                {{ form.email }}
+                {% if form.email.errors %}<div class="field-error">{{ form.email.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn btn-teal" type="submit">{{ submit_label }}</button>
+            <a class="btn btn-light" href="{% if doctor %}{% url 'doctor_detail' doctor.pk %}{% else %}{% url 'doctor_list' %}{% endif %}">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+

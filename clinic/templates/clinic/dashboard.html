@@ -1,0 +1,183 @@
+{% extends "clinic/base.html" %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<section class="welcome dashboard-welcome">
+    <div class="welcome-copy">
+        <p class="eyebrow">Clinic overview</p>
+        <h2>Welcome to MediRoom</h2>
+        <p>Your clinic at a glance, with live patient, appointment, room, and stock information.</p>
+    </div>
+</section>
+
+{% if low_stock_medicines or out_of_stock_medicines or expired_medicines or expiring_soon_medicines %}
+<div class="alert alert-warning dashboard-alert d-flex flex-wrap align-items-center justify-content-between gap-2">
+    <div>
+        <strong>Inventory alerts</strong>
+        {% if low_stock_medicines %}
+            <a href="{% url 'medicine_list' %}?status=low_stock" class="badge bg-warning text-dark text-decoration-none ms-2">{{ low_stock_medicines }} low stock</a>
+        {% endif %}
+        {% if out_of_stock_medicines %}
+            <a href="{% url 'medicine_list' %}?status=out_of_stock" class="badge bg-danger text-decoration-none ms-1">{{ out_of_stock_medicines }} out of stock</a>
+        {% endif %}
+        {% if expired_medicines %}
+            <a href="{% url 'medicine_list' %}?status=expired" class="badge bg-danger text-decoration-none ms-1">{{ expired_medicines }} expired</a>
+        {% endif %}
+        {% if expiring_soon_medicines %}
+            <a href="{% url 'medicine_list' %}?status=expiring_soon" class="badge bg-info text-dark text-decoration-none ms-1">{{ expiring_soon_medicines }} expiring soon</a>
+        {% endif %}
+    </div>
+    <a href="{% url 'medicine_list' %}" class="btn btn-sm btn-theme-outline">Review inventory &rarr;</a>
+</div>
+{% endif %}
+
+<section class="cards dashboard-cards" aria-label="Priority clinic statistics">
+    <a class="card card-link metric-card" href="{% url 'patient_list' %}">
+        <span class="metric-icon" aria-hidden="true">👥</span>
+        <p class="card-label">Total Patients</p>
+        <p class="card-value">{{ total_patients }}</p>
+        <p class="card-hint">Registered</p>
+    </a>
+    <a class="card card-link metric-card" href="{% url 'appointment_list' %}">
+        <span class="metric-icon" aria-hidden="true">📅</span>
+        <p class="card-label">Total Appointments</p>
+        <p class="card-value">{{ total_appointments }}</p>
+        <p class="card-hint">On record</p>
+    </a>
+    <a class="card card-link metric-card" href="{% url 'room_list' %}">
+        <span class="metric-icon" aria-hidden="true">🛏️</span>
+        <p class="card-label">Room occupancy</p>
+        <p class="card-value">{{ occupied_beds }}/{{ total_beds }}</p>
+        <p class="card-hint">{{ available_beds }} beds available · {{ total_rooms }} Total Rooms</p>
+    </a>
+    <a class="card card-link metric-card" href="{% url 'medicine_list' %}">
+        <span class="metric-icon" aria-hidden="true">💊</span>
+        <p class="card-label">Low-stock medicines</p>
+        <p class="card-value">{{ low_stock_medicines|add:out_of_stock_medicines }}</p>
+        <p class="card-hint">{{ out_of_stock_medicines }} out of stock</p>
+    </a>
+</section>
+
+<section class="dashboard-grid" aria-label="Clinic activity and capacity">
+    <article class="panel dashboard-panel chart-panel">
+        <div class="panel-header">
+            <div>
+                <h2><span class="heading-icon" aria-hidden="true">📈</span> Appointment trend</h2>
+                <p class="panel-subtitle">Appointments recorded over the last six months</p>
+            </div>
+            <a class="panel-action" href="{% url 'appointment_list' %}">View appointments &rarr;</a>
+        </div>
+        <div class="chart-wrap">
+            <canvas id="appointmentTrend" aria-label="Appointments per month for the last six months" role="img"></canvas>
+            <p id="chartFallback" class="chart-fallback" hidden>Appointment trend chart is unavailable right now.</p>
+        </div>
+        {{ appointment_chart_labels|json_script:"appointment-chart-labels" }}
+        {{ appointment_chart_data|json_script:"appointment-chart-data" }}
+    </article>
+
+    <article class="panel dashboard-panel occupancy-panel">
+        <div class="panel-header">
+            <div>
+                <h2><span class="heading-icon" aria-hidden="true">🛏️</span> Room occupancy</h2>
+                <p class="panel-subtitle">Current admitted patients against registered bed capacity</p>
+            </div>
+            <a class="panel-action" href="{% url 'room_list' %}">Manage rooms &rarr;</a>
+        </div>
+        <div class="occupancy-summary">
+            <strong>{{ occupied_beds }}<span> / {{ total_beds }} beds occupied</span></strong>
+            <span class="occupancy-rate">{{ occupancy_percent }}%</span>
+        </div>
+        <div class="occupancy-track" role="img" aria-label="{{ occupied_beds }} of {{ total_beds }} beds occupied">
+            <span class="occupancy-fill" style="width: {{ occupancy_percent }}%"></span>
+        </div>
+        <div class="occupancy-legend">
+            <span><i class="legend-dot occupied-dot"></i>{{ occupied_beds }} occupied</span>
+            <span><i class="legend-dot available-dot"></i>{{ available_beds }} available</span>
+        </div>
+        <div class="occupancy-footnote">
+            <span>{{ total_rooms }} rooms total</span>
+            <span>{{ maintenance_rooms }} under maintenance</span>
+        </div>
+    </article>
+
+    <article class="panel dashboard-panel stock-panel">
+        <div class="panel-header">
+            <div>
+                <h2><span class="heading-icon" aria-hidden="true">💊</span> Medicine Inventory</h2>
+                <p class="panel-subtitle">{{ total_stock_units }} units across {{ total_medicines }} medicine records</p>
+            </div>
+            <a class="panel-action" href="{% url 'medicine_list' %}">Inventory &rarr;</a>
+        </div>
+        {% if inventory_alert_medicines %}
+            <ul class="stock-watch-list">
+                {% for medicine in inventory_alert_medicines %}
+                    <li>
+                        <div class="stock-watch-name">
+                            <strong>{{ medicine.name }}</strong>
+                            <small>Batch {{ medicine.batch_number }} · minimum {{ medicine.min_stock_threshold }}</small>
+                        </div>
+                        {% if medicine.stock_quantity == 0 %}
+                            <span class="status-badge status-danger">Out of stock</span>
+                        {% else %}
+                            <span class="status-badge status-warning">{{ medicine.stock_quantity }} left</span>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="compact-empty-state">
+                <span aria-hidden="true">✓</span>
+                <p>No low or out-of-stock medicines. Stock levels are healthy.</p>
+            </div>
+        {% endif %}
+    </article>
+
+    <article class="panel dashboard-panel appointments-panel">
+        <div class="panel-header">
+            <div>
+                <h2><span class="heading-icon" aria-hidden="true">🗓️</span> Upcoming appointments</h2>
+                <p class="panel-subtitle">Next scheduled patient visits</p>
+            </div>
+            <a class="panel-action" href="{% url 'appointment_list' %}">See all &rarr;</a>
+        </div>
+        {% if upcoming_appointments %}
+            <ul class="upcoming-list">
+                {% for appointment in upcoming_appointments %}
+                    <li>
+                        <div class="appointment-date-tile">
+                            <strong>{{ appointment.appointment_date|date:"d" }}</strong>
+                            <span>{{ appointment.appointment_date|date:"M" }}</span>
+                        </div>
+                        <div class="upcoming-detail">
+                            <a href="{% url 'appointment_detail' appointment.pk %}">{{ appointment.patient.name }}</a>
+                            <span>{{ appointment.appointment_time|time:"H:i" }} · {{ appointment.doctor.name }}</span>
+                        </div>
+                        <span class="status-badge status-primary">{{ appointment.status }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="empty-state compact-empty-state">
+                <span class="empty-state-icon" aria-hidden="true">📅</span>
+                <p>No upcoming appointments scheduled.</p>
+                <a href="{% url 'appointment_add' %}">Schedule an appointment</a>
+            </div>
+        {% endif %}
+    </article>
+</section>
+
+<nav class="dashboard-module-counts" aria-label="Other module totals">
+    <a href="{% url 'doctor_list' %}"><span>🩺 Total Doctors</span><strong>{{ total_doctors }}</strong></a>
+    <a href="{% url 'admission_list' %}"><span>🏥 Total Admissions</span><strong>{{ total_admissions }}</strong></a>
+    <a href="{% url 'treatment_list' %}"><span>🩹 Total Treatments</span><strong>{{ total_treatments }}</strong></a>
+    <a href="{% url 'prescription_list' %}"><span>📋 Total Prescriptions</span><strong>{{ total_prescriptions }}</strong></a>
+</nav>
+{% endblock %}
+
+{% block page_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+<script src="{% static 'clinic/js/dashboard.js' %}"></script>
+{% endblock %}

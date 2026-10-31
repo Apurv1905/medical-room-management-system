@@ -1,0 +1,75 @@
+{% extends "clinic/base.html" %}
+
+{% block title %}Treatment #{{ treatment.treatment_id }}{% endblock %}
+{% block page_title %}Treatment Details{% endblock %}
+
+{% block content %}
+<div class="panel">
+    <div class="panel-header">
+        <div>
+            <h2>Treatment #{{ treatment.treatment_id }}</h2>
+            <p class="panel-subtitle">
+                Patient: <strong>{{ treatment.patient.name }}</strong> &bull;
+                Doctor: <strong>{{ treatment.doctor.name }}</strong>
+            </p>
+        </div>
+        <div class="header-actions">
+            <a class="btn btn-outline-teal" href="{% url 'treatment_edit' treatment.pk %}">Edit</a>
+            <a class="btn btn-danger" href="{% url 'treatment_delete' treatment.pk %}">Delete</a>
+        </div>
+    </div>
+
+    <dl class="detail-grid">
+        <div>
+            <dt>Treatment ID</dt>
+            <dd>#{{ treatment.treatment_id }}</dd>
+        </div>
+        <div>
+            <dt>Treatment Date</dt>
+            <dd>{{ treatment.treatment_date }}</dd>
+        </div>
+        <div>
+            <dt>Patient</dt>
+            <dd>
+                <a href="{% url 'patient_detail' treatment.patient.pk %}" class="theme-link fw-bold text-decoration-none">
+                    {{ treatment.patient.name }}
+                </a>
+                <small class="text-muted d-block">{{ treatment.patient.blood_group|default:"" }} {% if treatment.patient.gender %}&bull; {{ treatment.patient.gender }}{% endif %}</small>
+            </dd>
+        </div>
+        <div>
+            <dt>Treating Doctor</dt>
+            <dd>
+                <a href="{% url 'doctor_detail' treatment.doctor.pk %}" class="theme-link fw-bold text-decoration-none">
+                    {{ treatment.doctor.name }}
+                </a>
+                {% if treatment.doctor.specialization %}
+                    <small class="text-muted d-block">{{ treatment.doctor.specialization }}</small>
+                {% endif %}
+            </dd>
+        </div>
+        <div class="full-width">
+            <dt>Diagnosis</dt>
+            <dd class="fw-bold theme-emphasis">{{ treatment.diagnosis }}</dd>
+        </div>
+        <div class="full-width">
+            <dt>Treatment Description</dt>
+            <dd style="white-space: pre-wrap; font-weight: normal;">{{ treatment.description }}</dd>
+        </div>
+        {% if treatment.notes %}
+        <div class="full-width">
+            <dt>Additional Notes</dt>
+            <dd class="theme-muted" style="white-space: pre-wrap; font-weight: normal;">{{ treatment.notes }}</dd>
+        </div>
+        {% endif %}
+    </dl>
+
+    <div class="mt-3">
+        <a class="btn btn-teal me-2" href="{% url 'prescription_add' %}?patient={{ treatment.patient.pk }}&doctor={{ treatment.doctor.pk }}">
+            + Create Prescription for this Patient
+        </a>
+        <a class="btn btn-light" href="{% url 'treatment_list' %}">Back to Treatments</a>
+    </div>
+</div>
+{% endblock %}
+
