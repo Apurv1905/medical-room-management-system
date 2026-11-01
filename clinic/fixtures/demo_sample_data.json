@@ -1,0 +1,761 @@
+[
+{
+  "model": "clinic.patient",
+  "pk": 3,
+  "fields": {
+    "name": "Aarav Sharma",
+    "dob": "2004-02-28",
+    "gender": "Male",
+    "phone_no": "9000000001",
+    "address": "Nashik Road, Nashik",
+    "blood_group": "B+"
+  }
+},
+{
+  "model": "clinic.patient",
+  "pk": 4,
+  "fields": {
+    "name": "Priya Patil",
+    "dob": "1990-05-31",
+    "gender": "Female",
+    "phone_no": "9000000002",
+    "address": "CIDCO, Nashik",
+    "blood_group": "A+"
+  }
+},
+{
+  "model": "clinic.patient",
+  "pk": 5,
+  "fields": {
+    "name": "Rohan Deshmukh",
+    "dob": "1985-08-07",
+    "gender": "Male",
+    "phone_no": "9000000003",
+    "address": "Panchavati, Nashik",
+    "blood_group": "AB+"
+  }
+},
+{
+  "model": "clinic.patient",
+  "pk": 6,
+  "fields": {
+    "name": "Sneha Kulkarni",
+    "dob": "1970-09-28",
+    "gender": "Female",
+    "phone_no": "9000000004",
+    "address": "Indira Nagar, Nashik",
+    "blood_group": "AB-"
+  }
+},
+{
+  "model": "clinic.patient",
+  "pk": 7,
+  "fields": {
+    "name": "Aditya Joshi",
+    "dob": "2006-05-19",
+    "gender": "Male",
+    "phone_no": "9000000005",
+    "address": "Gangapur Road, Nashik",
+    "blood_group": "O+"
+  }
+},
+{
+  "model": "clinic.patient",
+  "pk": 8,
+  "fields": {
+    "name": "Rajesh Tripathi",
+    "dob": "1995-07-25",
+    "gender": "Male",
+    "phone_no": "9000000006",
+    "address": "Govind Nagar, Nashik",
+    "blood_group": "B+"
+  }
+},
+{
+  "model": "clinic.patient",
+  "pk": 9,
+  "fields": {
+    "name": "Mohan Verma",
+    "dob": "1960-07-19",
+    "gender": "Male",
+    "phone_no": "9000000007",
+    "address": "Lekha Nagar, Nashik",
+    "blood_group": "O-"
+  }
+},
+{
+  "model": "clinic.doctor",
+  "pk": 3,
+  "fields": {
+    "name": "Dr. Amit Mehta",
+    "specialization": "General Physician",
+    "phone_no": "9000000101",
+    "email": "amit@clinic.com"
+  }
+},
+{
+  "model": "clinic.doctor",
+  "pk": 4,
+  "fields": {
+    "name": "Dr. Neha Shah",
+    "specialization": "Cardiologist",
+    "phone_no": "9000000102",
+    "email": "neha@clinic.com"
+  }
+},
+{
+  "model": "clinic.doctor",
+  "pk": 5,
+  "fields": {
+    "name": "Dr. Karan Patil",
+    "specialization": "Orthopedic",
+    "phone_no": "9000000103",
+    "email": "karan@clinic.com"
+  }
+},
+{
+  "model": "clinic.doctor",
+  "pk": 6,
+  "fields": {
+    "name": "Dr. Pooja Desai",
+    "specialization": "Dermatologist",
+    "phone_no": "9000000104",
+    "email": "pooja@clinic.com"
+  }
+},
+{
+  "model": "clinic.appointment",
+  "pk": 2,
+  "fields": {
+    "patient": 3,
+    "doctor": 3,
+    "appointment_date": "2026-10-24",
+    "appointment_time": "09:30:00",
+    "reason_for_visit": "Fever and headache",
+    "status": "Scheduled"
+  }
+},
+{
+  "model": "clinic.appointment",
+  "pk": 3,
+  "fields": {
+    "patient": 4,
+    "doctor": 3,
+    "appointment_date": "2026-10-24",
+    "appointment_time": "10:30:00",
+    "reason_for_visit": "Cough and breathing concern",
+    "status": "Scheduled"
+  }
+},
+{
+  "model": "clinic.appointment",
+  "pk": 4,
+  "fields": {
+    "patient": 5,
+    "doctor": 4,
+    "appointment_date": "2026-10-24",
+    "appointment_time": "11:30:00",
+    "reason_for_visit": "Routine cardiac check-up",
+    "status": "Scheduled"
+  }
+},
+{
+  "model": "clinic.appointment",
+  "pk": 5,
+  "fields": {
+    "patient": 6,
+    "doctor": 6,
+    "appointment_date": "2026-10-25",
+    "appointment_time": "12:00:00",
+    "reason_for_visit": "Skin irritation",
+    "status": "Scheduled"
+  }
+},
+{
+  "model": "clinic.appointment",
+  "pk": 6,
+  "fields": {
+    "patient": 7,
+    "doctor": 5,
+    "appointment_date": "2026-10-25",
+    "appointment_time": "14:30:00",
+    "reason_for_visit": "Knee pain",
+    "status": "Scheduled"
+  }
+},
+{
+  "model": "clinic.room",
+  "pk": 1,
+  "fields": {
+    "room_number": "R101",
+    "room_type": "General Ward",
+    "bed_capacity": 4,
+    "charges_per_day": "800.00",
+    "status": "Available"
+  }
+},
+{
+  "model": "clinic.room",
+  "pk": 2,
+  "fields": {
+    "room_number": "R102",
+    "room_type": "General Ward",
+    "bed_capacity": 5,
+    "charges_per_day": "800.00",
+    "status": "Available"
+  }
+},
+{
+  "model": "clinic.room",
+  "pk": 3,
+  "fields": {
+    "room_number": "R201",
+    "room_type": "Private",
+    "bed_capacity": 1,
+    "charges_per_day": "2000.00",
+    "status": "Available"
+  }
+},
+{
+  "model": "clinic.room",
+  "pk": 4,
+  "fields": {
+    "room_number": "R202",
+    "room_type": "Private",
+    "bed_capacity": 1,
+    "charges_per_day": "2000.00",
+    "status": "Available"
+  }
+},
+{
+  "model": "clinic.room",
+  "pk": 5,
+  "fields": {
+    "room_number": "R301",
+    "room_type": "ICU",
+    "bed_capacity": 1,
+    "charges_per_day": "4000.00",
+    "status": "Available"
+  }
+},
+{
+  "model": "clinic.room",
+  "pk": 6,
+  "fields": {
+    "room_number": "R103",
+    "room_type": "Semi-Private",
+    "bed_capacity": 3,
+    "charges_per_day": "1000.00",
+    "status": "Under Maintenance"
+  }
+},
+{
+  "model": "clinic.admission",
+  "pk": 1,
+  "fields": {
+    "patient": 8,
+    "room": 1,
+    "admission_date": "2026-10-30",
+    "discharge_date": null,
+    "reason_for_admission": "Jaundice Infection",
+    "status": "Admitted"
+  }
+},
+{
+  "model": "clinic.admission",
+  "pk": 2,
+  "fields": {
+    "patient": 9,
+    "room": 3,
+    "admission_date": "2026-10-28",
+    "discharge_date": "2026-11-05",
+    "reason_for_admission": "Angiography",
+    "status": "Discharged"
+  }
+},
+{
+  "model": "clinic.treatment",
+  "pk": 1,
+  "fields": {
+    "patient": 3,
+    "doctor": 3,
+    "treatment_date": "2026-10-24",
+    "diagnosis": "Fever",
+    "description": "Assessment recorded; follow-up advised",
+    "notes": ""
+  }
+},
+{
+  "model": "clinic.treatment",
+  "pk": 2,
+  "fields": {
+    "patient": 4,
+    "doctor": 3,
+    "treatment_date": "2026-10-24",
+    "diagnosis": "Cough",
+    "description": "Respiratory assessment and monitoring",
+    "notes": ""
+  }
+},
+{
+  "model": "clinic.treatment",
+  "pk": 3,
+  "fields": {
+    "patient": 5,
+    "doctor": 4,
+    "treatment_date": "2026-10-24",
+    "diagnosis": "Cardiac observation",
+    "description": "Vital signs monitored",
+    "notes": ""
+  }
+},
+{
+  "model": "clinic.treatment",
+  "pk": 4,
+  "fields": {
+    "patient": 6,
+    "doctor": 6,
+    "treatment_date": "2026-10-25",
+    "diagnosis": "Skin irritation",
+    "description": "Skin assessment recorded",
+    "notes": ""
+  }
+},
+{
+  "model": "clinic.treatment",
+  "pk": 5,
+  "fields": {
+    "patient": 7,
+    "doctor": 5,
+    "treatment_date": "2026-10-25",
+    "diagnosis": "Knee Pain",
+    "description": "Joint examination recorded",
+    "notes": ""
+  }
+},
+{
+  "model": "clinic.medicine",
+  "pk": 1,
+  "fields": {
+    "name": "Paracetamol 500 mg",
+    "category": "Tablet",
+    "manufacturer": "Cipla",
+    "batch_number": "PCM2601",
+    "purchase_price": "1.00",
+    "selling_price": "2.00",
+    "stock_quantity": 190,
+    "min_stock_threshold": 30,
+    "expiry_date": "2028-06-30"
+  }
+},
+{
+  "model": "clinic.medicine",
+  "pk": 2,
+  "fields": {
+    "name": "Cetirizine 10 mg",
+    "category": "Tablet",
+    "manufacturer": "Sun Pharma",
+    "batch_number": "CTZ2601",
+    "purchase_price": "2.00",
+    "selling_price": "4.00",
+    "stock_quantity": 95,
+    "min_stock_threshold": 20,
+    "expiry_date": "2028-03-31"
+  }
+},
+{
+  "model": "clinic.medicine",
+  "pk": 3,
+  "fields": {
+    "name": "Amoxicillin 500 mg",
+    "category": "Capsule",
+    "manufacturer": "Pfizer",
+    "batch_number": "AMX2601",
+    "purchase_price": "4.00",
+    "selling_price": "7.00",
+    "stock_quantity": 80,
+    "min_stock_threshold": 20,
+    "expiry_date": "2027-08-31"
+  }
+},
+{
+  "model": "clinic.medicine",
+  "pk": 4,
+  "fields": {
+    "name": "Omeprazole 20 mg",
+    "category": "Capsule",
+    "manufacturer": "Emcure Pharma",
+    "batch_number": "OMP2601",
+    "purchase_price": "3.00",
+    "selling_price": "5.00",
+    "stock_quantity": 150,
+    "min_stock_threshold": 25,
+    "expiry_date": "2027-05-31"
+  }
+},
+{
+  "model": "clinic.medicine",
+  "pk": 5,
+  "fields": {
+    "name": "ORS Sachet",
+    "category": "Other",
+    "manufacturer": "Cipla",
+    "batch_number": "ORS2601",
+    "purchase_price": "8.00",
+    "selling_price": "12.00",
+    "stock_quantity": 5,
+    "min_stock_threshold": 15,
+    "expiry_date": "2026-12-31"
+  }
+},
+{
+  "model": "clinic.medicine",
+  "pk": 6,
+  "fields": {
+    "name": "Vitamin C 500 mg",
+    "category": "Tablet",
+    "manufacturer": "Glenmark",
+    "batch_number": "VTC2601",
+    "purchase_price": "2.00",
+    "selling_price": "4.00",
+    "stock_quantity": 110,
+    "min_stock_threshold": 20,
+    "expiry_date": "2027-04-30"
+  }
+},
+{
+  "model": "clinic.medicine",
+  "pk": 7,
+  "fields": {
+    "name": "Ibuprofen 200 mg",
+    "category": "Tablet",
+    "manufacturer": "Sun Pharma",
+    "batch_number": "IBP2601",
+    "purchase_price": "2.00",
+    "selling_price": "4.00",
+    "stock_quantity": 55,
+    "min_stock_threshold": 15,
+    "expiry_date": "2026-12-31"
+  }
+},
+{
+  "model": "clinic.medicinestockmovement",
+  "pk": 1,
+  "fields": {
+    "medicine": 1,
+    "movement_type": "Initial Stock",
+    "quantity_change": 200,
+    "resulting_stock": 200,
+    "notes": "Initial stock quantity recorded upon creation.",
+    "created_at": "2026-10-23T19:57:18.862Z",
+    "created_by": 1
+  }
+},
+{
+  "model": "clinic.medicinestockmovement",
+  "pk": 2,
+  "fields": {
+    "medicine": 2,
+    "movement_type": "Initial Stock",
+    "quantity_change": 100,
+    "resulting_stock": 100,
+    "notes": "Initial stock quantity recorded upon creation.",
+    "created_at": "2026-10-23T19:59:11.174Z",
+    "created_by": 1
+  }
+},
+{
+  "model": "clinic.medicinestockmovement",
+  "pk": 3,
+  "fields": {
+    "medicine": 3,
+    "movement_type": "Initial Stock",
+    "quantity_change": 80,
+    "resulting_stock": 80,
+    "notes": "Initial stock quantity recorded upon creation.",
+    "created_at": "2026-10-23T20:00:52.107Z",
+    "created_by": 1
+  }
+},
+{
+  "model": "clinic.medicinestockmovement",
+  "pk": 4,
+  "fields": {
+    "medicine": 4,
+    "movement_type": "Initial Stock",
+    "quantity_change": 150,
+    "resulting_stock": 150,
+    "notes": "Initial stock quantity recorded upon creation.",
+    "created_at": "2026-10-23T20:02:33.365Z",
+    "created_by": 1
+  }
+},
+{
+  "model": "clinic.medicinestockmovement",
+  "pk": 5,
+  "fields": {
+    "medicine": 5,
+    "movement_type": "Initial Stock",
+    "quantity_change": 8,
+    "resulting_stock": 8,
+    "notes": "Initial stock quantity recorded upon creation.",
+    "created_at": "2026-10-23T20:04:49.143Z",
+    "created_by": 1
+  }
+},
+{
+  "model": "clinic.medicinestockmovement",
+  "pk": 6,
+  "fields": {
+    "medicine": 6,
+    "movement_type": "Initial Stock",
+    "quantity_change": 120,
+    "resulting_stock": 120,
+    "notes": "Initial stock quantity recorded upon creation.",
+    "created_at": "2026-10-23T20:06:10.578Z",
+    "created_by": 1
+  }
+},
+{
+  "model": "clinic.medicinestockmovement",
+  "pk": 7,
+  "fields": {
+    "medicine": 7,
+    "movement_type": "Initial Stock",
+    "quantity_change": 5,
+    "resulting_stock": 5,
+    "notes": "Initial stock quantity recorded upon creation.",
+    "created_at": "2026-10-23T20:08:19.173Z",
+    "created_by": 1
+  }
+},
+{
+  "model": "clinic.medicinestockmovement",
+  "pk": 8,
+  "fields": {
+    "medicine": 1,
+    "movement_type": "Dispensed",
+    "quantity_change": -10,
+    "resulting_stock": 190,
+    "notes": "Dispensed for Prescription #1 (Patient: Aarav Sharma)",
+    "created_at": "2026-10-23T20:17:30.700Z",
+    "created_by": 1
+  }
+},
+{
+  "model": "clinic.medicinestockmovement",
+  "pk": 9,
+  "fields": {
+    "medicine": 5,
+    "movement_type": "Dispensed",
+    "quantity_change": -3,
+    "resulting_stock": 5,
+    "notes": "Dispensed for Prescription #2 (Patient: Priya Patil)",
+    "created_at": "2026-10-23T20:20:11.652Z",
+    "created_by": 1
+  }
+},
+{
+  "model": "clinic.medicinestockmovement",
+  "pk": 10,
+  "fields": {
+    "medicine": 5,
+    "movement_type": "Dispensed",
+    "quantity_change": -3,
+    "resulting_stock": 2,
+    "notes": "Dispensed for Prescription #3 (Patient: Aarav Sharma)",
+    "created_at": "2026-10-24T05:49:11.445Z",
+    "created_by": 1
+  }
+},
+{
+  "model": "clinic.medicinestockmovement",
+  "pk": 11,
+  "fields": {
+    "medicine": 2,
+    "movement_type": "Dispensed",
+    "quantity_change": -5,
+    "resulting_stock": 95,
+    "notes": "Dispensed for Prescription #4 (Patient: Priya Patil)",
+    "created_at": "2026-10-24T05:51:32.399Z",
+    "created_by": 1
+  }
+},
+{
+  "model": "clinic.medicinestockmovement",
+  "pk": 12,
+  "fields": {
+    "medicine": 6,
+    "movement_type": "Dispensed",
+    "quantity_change": -10,
+    "resulting_stock": 110,
+    "notes": "Dispensed for Prescription #5 (Patient: Sneha Kulkarni)",
+    "created_at": "2026-10-24T05:53:44.206Z",
+    "created_by": 1
+  }
+},
+{
+  "model": "clinic.medicinestockmovement",
+  "pk": 13,
+  "fields": {
+    "medicine": 7,
+    "movement_type": "Stock In",
+    "quantity_change": 50,
+    "resulting_stock": 55,
+    "notes": "Newly purchased stock received.",
+    "created_at": "2026-10-24T06:13:04.320Z",
+    "created_by": 1
+  }
+},
+{
+  "model": "clinic.medicinestockmovement",
+  "pk": 14,
+  "fields": {
+    "medicine": 5,
+    "movement_type": "Stock In",
+    "quantity_change": 50,
+    "resulting_stock": 52,
+    "notes": "Newly purchased stock received.",
+    "created_at": "2026-10-24T06:13:51.717Z",
+    "created_by": 1
+  }
+},
+{
+  "model": "clinic.medicinestockmovement",
+  "pk": 15,
+  "fields": {
+    "medicine": 5,
+    "movement_type": "Adjustment",
+    "quantity_change": -47,
+    "resulting_stock": 5,
+    "notes": "Stock quantity adjusted during record edit.",
+    "created_at": "2026-11-01T15:42:59.082Z",
+    "created_by": 1
+  }
+},
+{
+  "model": "clinic.prescription",
+  "pk": 1,
+  "fields": {
+    "patient": 3,
+    "doctor": 3,
+    "prescription_date": "2026-10-24",
+    "instructions": "Use only as directed by the treating clinician"
+  }
+},
+{
+  "model": "clinic.prescription",
+  "pk": 3,
+  "fields": {
+    "patient": 3,
+    "doctor": 3,
+    "prescription_date": "2026-10-24",
+    "instructions": ""
+  }
+},
+{
+  "model": "clinic.prescription",
+  "pk": 4,
+  "fields": {
+    "patient": 4,
+    "doctor": 3,
+    "prescription_date": "2026-10-24",
+    "instructions": "Use only as directed by the treating clinician"
+  }
+},
+{
+  "model": "clinic.prescription",
+  "pk": 5,
+  "fields": {
+    "patient": 6,
+    "doctor": 6,
+    "prescription_date": "2026-10-25",
+    "instructions": "Use only as directed by the treating clinician"
+  }
+},
+{
+  "model": "clinic.prescription",
+  "pk": 6,
+  "fields": {
+    "patient": 7,
+    "doctor": 5,
+    "prescription_date": "2026-10-26",
+    "instructions": "Use only as directed by the treating clinician"
+  }
+},
+{
+  "model": "clinic.prescriptionmedicine",
+  "pk": 1,
+  "fields": {
+    "prescription": 1,
+    "medicine": 1,
+    "medicine_name": "Paracetamol 500 mg",
+    "dosage": "500 mg",
+    "frequency": "Twice after the meal",
+    "duration": "5 Days",
+    "quantity": 10,
+    "is_dispensed": true,
+    "dispensed_at": "2026-10-23T20:17:30.698Z"
+  }
+},
+{
+  "model": "clinic.prescriptionmedicine",
+  "pk": 3,
+  "fields": {
+    "prescription": 3,
+    "medicine": 5,
+    "medicine_name": "ORS Sachet",
+    "dosage": "-",
+    "frequency": "once in a day",
+    "duration": "3 Days",
+    "quantity": 3,
+    "is_dispensed": true,
+    "dispensed_at": "2026-10-24T05:49:11.443Z"
+  }
+},
+{
+  "model": "clinic.prescriptionmedicine",
+  "pk": 4,
+  "fields": {
+    "prescription": 4,
+    "medicine": 2,
+    "medicine_name": "Cetirizine 10 mg",
+    "dosage": "10 mg",
+    "frequency": "Twice after the meal",
+    "duration": "10 Days",
+    "quantity": 5,
+    "is_dispensed": true,
+    "dispensed_at": "2026-10-24T05:51:32.397Z"
+  }
+},
+{
+  "model": "clinic.prescriptionmedicine",
+  "pk": 5,
+  "fields": {
+    "prescription": 5,
+    "medicine": 6,
+    "medicine_name": "Vitamin C 500 mg",
+    "dosage": "500 mg",
+    "frequency": "once in a day",
+    "duration": "10 Days",
+    "quantity": 10,
+    "is_dispensed": true,
+    "dispensed_at": "2026-10-24T05:53:44.203Z"
+  }
+},
+{
+  "model": "clinic.prescriptionmedicine",
+  "pk": 6,
+  "fields": {
+    "prescription": 6,
+    "medicine": 7,
+    "medicine_name": "Ibuprofen 200 mg",
+    "dosage": "200 mg",
+    "frequency": "once in a day",
+    "duration": "10 Days",
+    "quantity": 10,
+    "is_dispensed": false,
+    "dispensed_at": null
+  }
+}
+]
